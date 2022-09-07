@@ -1,1 +1,70 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  font-family: Rubik, sans-serif;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0.5rem;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: color 500ms,
+  background-color 700ms;
+}
+
+
+.dark {
+  --text-primary: #b6b6b6;
+  --text-secondary: #f9f9f9;
+  --bg-primary: #23232e;
+  --bg-secondary: #1414189a;
+  --ico: #dc143c;
+  --shader-90: #141418e6;
+  --shader-70: #141418b3;
+  --shader-50: #14141880;
+  --shader-30: #1414184d;
+  --shader-10: #1414181a;
+}
+
+.light {
+  --text-primary: #1f1f1f;
+  --text-secondary: #000000;
+  --bg-primary: #ffffff;
+  --bg-secondary: #e4e4e4af;
+  --ico: #dc143c;
+  --shader-90: #e4e4e4e6;
+  --shader-70: #e4e4e4b3;
+  --shader-50: #e4e4e480;
+  --shader-30: #e4e4e44d;
+  --shader-10: #e4e4e41a;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 500ms;
+}
+
+a:hover {
+  color: var(--ico);
+}
+
+app-theme-btn {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: var(--shader-50);
+  border-radius: 0 0 0 2rem;
+  transition: color 500ms,
+  background-color 700ms;
+}
+
+app-theme-btn:hover {
+  color: var(--ico);
+  background-color: var(--shader-90);
+}
