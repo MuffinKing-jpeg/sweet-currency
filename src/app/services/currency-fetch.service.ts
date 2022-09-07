@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {bankCurrency, CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
+import {CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
 import {number} from "currency-codes"
 
 
@@ -19,63 +19,81 @@ export class CurrencyFetchService {
     ) {
     }
 
-    fetchAll(): any {
-        return Promise.all([this.getNBU(), this.getMono(), this.getPrivat()])
+    fetchAll(): void {
+        Promise.all([this.getNBU(), this.getMono(), this.getPrivat()]).then(res => {
+            localStorage.setItem('exchange-rate', JSON.stringify(res));
+            localStorage.setItem('update-time', Date.now().toString());
+        });
+
+
     }
 
-    fetchBank(url: string): Observable<iNBU | iPrivat | iMono> {
-        return this.http.get<iNBU | iPrivat | iMono>(url)
+    private fetchBank(url: string): Observable<object[]> {
+        return this.http.get<object[]>(url)
     }
 
     private getNBU(): Promise<any> {
         return new Promise(resolve => {
             this.fetchBank(this.nbuUrl)
-                .subscribe((res: any) => {
-                    let response: bankCurrency;
-                    let data: CurrencyInterface[] = [];
+                .subscribe(
+                    (res: any) => {
+                        let data: CurrencyInterface[] = [];
 
-                    res.forEach((e: iNBU) => {
-                        data.push({
-                            cc: e.cc,
-                            rate: e.rate,
-                            rateBuy: e.rate,
-                            rateSale: e.rate,
+                        res.forEach((e: iNBU) => {
+                            data.push({
+                                cc: e.cc,
+                                rate: e.rate,
+                                rateBuy: e.rate,
+                                rateSale: e.rate,
+                            })
+                        })
+
+                        resolve({
+                            name: 'НБУ',
+                            data: data,
+                        });
+                    },
+                    (error) => {
+                        resolve({
+                            name: 'НБУ',
+                            data: null,
+                            msg: error.message
                         })
                     })
-
-                    response = {
-                        name: 'НБУ',
-                        data: data
-                    }
-                    resolve(response);
-                })
         })
     }
 
     private getMono(): Promise<any> {
         return new Promise(resolve => {
             this.fetchBank(this.monoUrl)
-                .subscribe((res: any) => {
-                    let response: bankCurrency;
-                    let data: CurrencyInterface[] = [];
+                .subscribe((res) => {
+                        let data: CurrencyInterface[] = [];
 
-                    res.forEach((e: iMono) => {
-                        if (e.currencyCodeB === 980) {
-                            data.push({
-                                cc: number(`${e.currencyCodeA}`)?.code,
-                                rate: e.rateBuy && e.rateSell ? (e.rateBuy + e.rateSell) / 2 : e.rateCross,
-                                rateBuy: e.rateBuy ? e.rateBuy : e.rateCross,
-                                rateSale: e.rateSell ? e.rateSell : e.rateCross,
-                            })
-                        }
+                        res.forEach((e: iMono) => {
+                            if (e.currencyCodeB === 980) {
+                                data.push({
+                                    cc: number(`${e.currencyCodeA}`)?.code,
+                                    rate: e.rateBuy && e.rateSell ? (e.rateBuy + e.rateSell) / 2 : e.rateCross,
+                                    rateBuy: e.rateBuy ? e.rateBuy : e.rateCross,
+                                    rateSale: e.rateSell ? e.rateSell : e.rateCross,
+                                })
+                            }
+                        })
+
+
+                        resolve({
+                            name: 'MonoBank',
+                            data: data
+                        });
+                    },
+                    (error) => {
+
+                        resolve({
+                            name: 'MonoBank',
+                            data: null,
+                            msg: error.message
+                        })
                     })
-
-                    response = {
-                        name: 'MonoBank',
-                        data: data
-                    }
-                    resolve(response);
-                })
         })
     }
 
@@ -83,26 +101,30 @@ export class CurrencyFetchService {
         return new Promise((resolve) => {
             this.fetchBank(this.privatUrl)
                 .subscribe((res: any) => {
-                    let response: bankCurrency;
-                    let data: CurrencyInterface[] = [];
+                        let data: CurrencyInterface[] = [];
 
-                    res.forEach((e: iPrivat) => {
-                        if (e.base_ccy === 'UAH') {
-                            data.push({
-                                cc: e.ccy,
-                                rate: (e.buy + e.sale) / 2,
-                                rateBuy: e.buy,
-                                rateSale: e.sale,
-                            })
-                        }
+                        res.forEach((e: iPrivat) => {
+                            if (e.base_ccy === 'UAH') {
+                                data.push({
+                                    cc: e.ccy,
+                                    rate: (e.buy + e.sale) / 2,
+                                    rateBuy: e.buy,
+                                    rateSale: e.sale,
+                                })
+                            }
+                        })
+                        resolve({
+                            name: 'Privat24',
+                            data: data
+                        });
+                    },
+                    (error) => {
+                        resolve({
+                            name: 'Privat24',
+                            data: null,
+                            msg: error.message
+                        })
                     })
-
-                    response = {
-                        name: 'Privat24',
-                        data: data
-                    }
-                    resolve(response);
-                })
         })
     }
 }

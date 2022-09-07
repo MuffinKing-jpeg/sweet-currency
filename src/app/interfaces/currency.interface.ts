@@ -7,7 +7,8 @@ export interface CurrencyInterface {
 
 export interface bankCurrency {
     name: string,
-    data: CurrencyInterface[]
+    data: CurrencyInterface[] | null,
+    msg?: string,
 }
 
 export interface iPrivat {
@@ -26,9 +27,9 @@ export interface iNBU {
 }
 
 export interface iMono {
-    currencyCodeA: number,
-    currencyCodeB: number,
-    date: number,
+    currencyCodeA?: number,
+    currencyCodeB?: number,
+    date?: number,
     rateBuy?: number,
     rateSell?: number,
     rateCross?: number,
