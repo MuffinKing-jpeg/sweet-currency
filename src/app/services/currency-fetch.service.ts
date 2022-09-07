@@ -19,13 +19,22 @@ export class CurrencyFetchService {
     ) {
     }
 
+    loadRates(): void {
+        if (localStorage.getItem('exchange-rate')) {
+            if (localStorage.getItem('update-time')) {
+                const storageTime = localStorage.getItem('update-time')
+                const cachedTS = storageTime && new Date(+storageTime).getDay()
+                const today = new Date(Date.now()).getDay();
+                if (cachedTS !== today) this.fetchAll()
+            } else this.fetchAll()
+        } else this.fetchAll();
+    }
+
     fetchAll(): void {
         Promise.all([this.getNBU(), this.getMono(), this.getPrivat()]).then(res => {
             localStorage.setItem('exchange-rate', JSON.stringify(res));
             localStorage.setItem('update-time', Date.now().toString());
         });
-
-
     }
 
     private fetchBank(url: string): Observable<object[]> {
