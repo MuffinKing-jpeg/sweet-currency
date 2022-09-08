@@ -14,8 +14,8 @@ export interface bankCurrency {
 export interface iPrivat {
     ccy: string,
     base_ccy: string,
-    buy: number,
-    sale: number,
+    buy: string,
+    sale: string,
 }
 
 export interface iNBU {

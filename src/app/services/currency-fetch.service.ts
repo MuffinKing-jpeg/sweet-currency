@@ -11,7 +11,8 @@ import {number} from "currency-codes"
 export class CurrencyFetchService {
     nbuUrl = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
     monoUrl = 'https://api.monobank.ua/bank/currency';
-    privatUrl = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
+    privatUrl1 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
+    privatUrl2 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=4';
     data = this.loadFromCache();
 
     constructor(
@@ -49,7 +50,6 @@ export class CurrencyFetchService {
         this.loadRates();
 
         const localRawData = localStorage.getItem('exchange-rate')
-        console.log(localRawData && JSON.parse(localRawData))
         return localRawData && JSON.parse(localRawData)
     }
 
@@ -124,32 +124,47 @@ export class CurrencyFetchService {
 
     private getPrivat(): Promise<any> {
         return new Promise((resolve) => {
-            this.fetchBank(this.privatUrl)
+            this.fetchBank(this.privatUrl1)
                 .subscribe((res: any) => {
-                        let data: CurrencyInterface[] = [];
-
-                        res.forEach((e: iPrivat) => {
-                            if (e.base_ccy === 'UAH') {
-                                data.push({
-                                    cc: e.ccy,
-                                    rate: (e.buy + e.sale) / 2,
-                                    rateBuy: e.buy,
-                                    rateSale: e.sale,
+                    let data: CurrencyInterface[] = [];
+                    res.forEach((e: iPrivat) => {
+                        if (e.base_ccy === 'UAH') {
+                            data.push({
+                                cc: e.ccy,
+                                rate: (+e.buy + +e.sale) / 2,
+                                rateBuy: +e.buy,
+                                rateSale: +e.sale,
+                            })
+                        }
+                        this.fetchBank(this.privatUrl2)
+                            .subscribe((res: any) => {
+                                    res.forEach((e: iPrivat) => {
+                                        if (e.base_ccy === 'UAH') {
+                                            console.log(e)
+                                            data.push({
+                                                cc: e.ccy,
+                                                rate: (+e.buy + +e.sale) / 2,
+                                                rateBuy: +e.buy,
+                                                rateSale: +e.sale,
+                                            })
+                                        }
+                                    })
+                                    resolve({
+                                        name: 'Privat24',
+                                        data: data
+                                    });
+                                },
+                                (error) => {
+                                    resolve({
+                                        name: 'Privat24',
+                                        data: null,
+                                        msg: error.message
+                                    })
                                 })
-                            }
-                        })
-                        resolve({
-                            name: 'Privat24',
-                            data: data
-                        });
-                    },
-                    (error) => {
-                        resolve({
-                            name: 'Privat24',
-                            data: null,
-                            msg: error.message
-                        })
                     })
+
+
+                })
         })
     }
 }
