@@ -12,21 +12,27 @@ export class CurrencyFetchService {
     nbuUrl = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
     monoUrl = 'https://api.monobank.ua/bank/currency';
     privatUrl = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
-
+    data = this.loadFromCache();
 
     constructor(
         private http: HttpClient,
     ) {
     }
 
+    // @ts-ignore
+    getBanksList(): object[] {
+    }
+
     loadRates(): void {
         if (localStorage.getItem('exchange-rate')) {
             if (localStorage.getItem('update-time')) {
                 const storageTime = localStorage.getItem('update-time')
-                const cachedTS = storageTime && new Date(+storageTime).getDay()
+                const cached = storageTime && new Date(+storageTime).getDay()
                 const today = new Date(Date.now()).getDay();
-                if (cachedTS !== today) this.fetchAll()
-            } else this.fetchAll()
+                if (cached !== today) {
+                    this.fetchAll()
+                }
+            } else this.fetchAll();
         } else this.fetchAll();
     }
 
@@ -35,6 +41,16 @@ export class CurrencyFetchService {
             localStorage.setItem('exchange-rate', JSON.stringify(res));
             localStorage.setItem('update-time', Date.now().toString());
         });
+
+
+    }
+
+    private loadFromCache(): object[] {
+        this.loadRates();
+
+        const localRawData = localStorage.getItem('exchange-rate')
+        console.log(localRawData && JSON.parse(localRawData))
+        return localRawData && JSON.parse(localRawData)
     }
 
     private fetchBank(url: string): Observable<object[]> {

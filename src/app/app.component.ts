@@ -20,6 +20,6 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.themeService.checkTheme();
-        this.fetchCurrency.loadRates();
+        console.log(this.fetchCurrency.data);
     }
 }
