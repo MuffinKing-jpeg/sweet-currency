@@ -1,0 +1,7 @@
+<nav>
+    <div>
+        <span *ngFor="let item of this.fetchCurrency.data; index as i;" id="{{i}}">
+            <button><span>{{this.fetchCurrency.data[i].name}}</span></button>
+        </span>
+    </div>
+</nav>

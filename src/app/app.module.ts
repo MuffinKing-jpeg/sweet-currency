@@ -5,13 +5,13 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {ThemeBtnComponent} from './theme-btn/theme-btn.component';
 import {HttpClientModule} from "@angular/common/http";
-import { NavbarComponent } from './navbar/navbar.component';
+import { CalculatorComponent } from './calculator/calculator.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         ThemeBtnComponent,
-        NavbarComponent
+        CalculatorComponent,
     ],
     imports: [
         BrowserModule,

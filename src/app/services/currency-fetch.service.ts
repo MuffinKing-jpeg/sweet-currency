@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
+import {bankCurrency, CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
 import {number} from "currency-codes"
 
 
@@ -13,15 +13,11 @@ export class CurrencyFetchService {
     monoUrl = 'https://api.monobank.ua/bank/currency';
     privatUrl1 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
     privatUrl2 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=4';
-    data = this.loadFromCache();
+    data: bankCurrency[] = [];
 
     constructor(
         private http: HttpClient,
     ) {
-    }
-
-    // @ts-ignore
-    getBanksList(): object[] {
     }
 
     loadRates(): void {
@@ -30,9 +26,7 @@ export class CurrencyFetchService {
                 const storageTime = localStorage.getItem('update-time')
                 const cached = storageTime && new Date(+storageTime).getDay()
                 const today = new Date(Date.now()).getDay();
-                if (cached !== today) {
-                    this.fetchAll()
-                }
+                cached !== today ? this.fetchAll() : this.data = this.loadFromCache();
             } else this.fetchAll();
         } else this.fetchAll();
     }
@@ -41,14 +35,14 @@ export class CurrencyFetchService {
         Promise.all([this.getNBU(), this.getMono(), this.getPrivat()]).then(res => {
             localStorage.setItem('exchange-rate', JSON.stringify(res));
             localStorage.setItem('update-time', Date.now().toString());
+            this.data = res;
+            console.log(res)
         });
 
 
     }
 
-    private loadFromCache(): object[] {
-        this.loadRates();
-
+    private loadFromCache(): bankCurrency[] {
         const localRawData = localStorage.getItem('exchange-rate')
         return localRawData && JSON.parse(localRawData)
     }
@@ -140,7 +134,6 @@ export class CurrencyFetchService {
                             .subscribe((res: any) => {
                                     res.forEach((e: iPrivat) => {
                                         if (e.base_ccy === 'UAH') {
-                                            console.log(e)
                                             data.push({
                                                 cc: e.ccy,
                                                 rate: (+e.buy + +e.sale) / 2,
