@@ -1,0 +1,36 @@
+
+ul {
+  display: flex;
+  flex-direction: row;
+}
+
+li:first-child {
+  border-radius: 2rem 0 0 2rem;
+}
+
+li:last-child {
+  border-radius: 0 2rem 2rem 0;
+}
+
+li {
+  display: inline;
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed);
+  background-color: var(--shader-50);
+}
+
+li:hover {
+  color: var(--ico);
+  background-color: var(--shader-90);
+}
+
+li.active {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+
+}
+
+a {
+  padding: 1rem 2rem;
+  display: block;
+}

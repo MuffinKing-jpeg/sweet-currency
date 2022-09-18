@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {CurrencyFetchService} from "../services/currency-fetch.service";
 
 @Component({
-    selector: 'app-calculator',
-    templateUrl: './calculator.component.html',
-    styleUrls: ['./calculator.component.scss']
+    selector: 'app-calculator-wrapper',
+    templateUrl: './calculator-wrapper.component.html',
+    styleUrls: ['./calculator-wrapper.component.scss']
 })
-export class CalculatorComponent implements OnInit {
+export class CalculatorWrapperComponent implements OnInit {
 
     constructor(public fetchCurrency: CurrencyFetchService) {
 

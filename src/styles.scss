@@ -1,6 +1,7 @@
 :root {
   font-family: Rubik, sans-serif;
   font-size: 16px;
+  --transition-speed: 500ms;
 }
 
 * {
@@ -13,16 +14,17 @@ body {
   min-height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: color 500ms,
-  background-color 700ms;
+  transition: color var(--transition-speed),
+  background-color calc(var(--transition-speed) * 1.2);
+
 }
 
 
 .dark {
-  --text-primary: #b6b6b6;
-  --text-secondary: #f9f9f9;
+  --text-primary: #e8e8e8;
+  --text-secondary: #51143c;
   --bg-primary: #23232e;
-  --bg-secondary: #1414189a;
+  --bg-secondary: #c5c5c5;
   --ico: #dc143c;
   --shader-90: #141418e6;
   --shader-70: #141418b3;
@@ -33,9 +35,9 @@ body {
 
 .light {
   --text-primary: #1f1f1f;
-  --text-secondary: #000000;
+  --text-secondary: #ffffff;
   --bg-primary: #ffffff;
-  --bg-secondary: #e4e4e4af;
+  --bg-secondary: #252525;
   --ico: #dc143c;
   --shader-90: #e4e4e4e6;
   --shader-70: #e4e4e4b3;
@@ -54,6 +56,10 @@ a:hover {
   color: var(--ico);
 }
 
+app-root {
+  height: 100%;
+}
+
 app-theme-btn {
   position: fixed;
   top: 0;
@@ -67,4 +73,21 @@ app-theme-btn {
 app-theme-btn:hover {
   color: var(--ico);
   background-color: var(--shader-90);
+}
+
+app-calculator-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+app-not-found {
+  text-align: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }

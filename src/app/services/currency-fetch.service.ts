@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {bankCurrency, CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
+import {BankCurrency, CurrencyInterface, iMono, iNBU, iPrivat} from "../interfaces/currency.interface";
 import {number} from "currency-codes"
 
 
@@ -13,7 +13,7 @@ export class CurrencyFetchService {
     monoUrl = 'https://api.monobank.ua/bank/currency';
     privatUrl1 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
     privatUrl2 = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=4';
-    data: bankCurrency[] = [];
+    data: BankCurrency[] = [];
 
     constructor(
         private http: HttpClient,
@@ -36,13 +36,12 @@ export class CurrencyFetchService {
             localStorage.setItem('exchange-rate', JSON.stringify(res));
             localStorage.setItem('update-time', Date.now().toString());
             this.data = res;
-            console.log(res)
         });
 
 
     }
 
-    private loadFromCache(): bankCurrency[] {
+    private loadFromCache(): BankCurrency[] {
         const localRawData = localStorage.getItem('exchange-rate')
         return localRawData && JSON.parse(localRawData)
     }
@@ -51,113 +50,125 @@ export class CurrencyFetchService {
         return this.http.get<object[]>(url)
     }
 
-    private getNBU(): Promise<any> {
+    private getNBU(): Promise<BankCurrency> {
         return new Promise(resolve => {
             this.fetchBank(this.nbuUrl)
-                .subscribe(
-                    (res: any) => {
-                        let data: CurrencyInterface[] = [];
+                .subscribe({
+                        next: (res: any) => {
+                            let data: CurrencyInterface[] = [];
 
-                        res.forEach((e: iNBU) => {
-                            data.push({
-                                cc: e.cc,
-                                rate: e.rate,
-                                rateBuy: e.rate,
-                                rateSale: e.rate,
-                            })
-                        })
-
-                        resolve({
-                            name: 'НБУ',
-                            data: data,
-                        });
-                    },
-                    (error) => {
-                        resolve({
-                            name: 'НБУ',
-                            data: null,
-                            msg: error.message
-                        })
-                    })
-        })
-    }
-
-    private getMono(): Promise<any> {
-        return new Promise(resolve => {
-            this.fetchBank(this.monoUrl)
-                .subscribe((res) => {
-                        let data: CurrencyInterface[] = [];
-
-                        res.forEach((e: iMono) => {
-                            if (e.currencyCodeB === 980) {
+                            res.forEach((e: iNBU) => {
                                 data.push({
-                                    cc: number(`${e.currencyCodeA}`)?.code,
-                                    rate: e.rateBuy && e.rateSell ? (e.rateBuy + e.rateSell) / 2 : e.rateCross,
-                                    rateBuy: e.rateBuy ? e.rateBuy : e.rateCross,
-                                    rateSale: e.rateSell ? e.rateSell : e.rateCross,
+                                    cc: e.cc,
+                                    rate: e.rate,
+                                    rateBuy: e.rate,
+                                    rateSale: e.rate,
                                 })
-                            }
-                        })
+                            })
 
-
-                        resolve({
-                            name: 'MonoBank',
-                            data: data
-                        });
-                    },
-                    (error) => {
-
-                        resolve({
-                            name: 'MonoBank',
-                            data: null,
-                            msg: error.message
-                        })
-                    })
-        })
-    }
-
-    private getPrivat(): Promise<any> {
-        return new Promise((resolve) => {
-            this.fetchBank(this.privatUrl1)
-                .subscribe((res: any) => {
-                    let data: CurrencyInterface[] = [];
-                    res.forEach((e: iPrivat) => {
-                        if (e.base_ccy === 'UAH') {
-                            data.push({
-                                cc: e.ccy,
-                                rate: (+e.buy + +e.sale) / 2,
-                                rateBuy: +e.buy,
-                                rateSale: +e.sale,
+                            resolve({
+                                name: 'NBU',
+                                data: data,
+                            });
+                        },
+                        error: (error) => {
+                            resolve({
+                                name: 'NBU',
+                                data: null,
+                                msg: error.message
                             })
                         }
-                        this.fetchBank(this.privatUrl2)
-                            .subscribe((res: any) => {
-                                    res.forEach((e: iPrivat) => {
-                                        if (e.base_ccy === 'UAH') {
-                                            data.push({
-                                                cc: e.ccy,
-                                                rate: (+e.buy + +e.sale) / 2,
-                                                rateBuy: +e.buy,
-                                                rateSale: +e.sale,
-                                            })
-                                        }
-                                    })
-                                    resolve({
-                                        name: 'Privat24',
-                                        data: data
-                                    });
-                                },
-                                (error) => {
-                                    resolve({
-                                        name: 'Privat24',
-                                        data: null,
-                                        msg: error.message
-                                    })
-                                })
-                    })
-
-
-                })
+                    }
+                )
         })
+    }
+
+    private getMono(): Promise<BankCurrency> {
+        return new Promise(resolve => {
+            this.fetchBank(this.monoUrl)
+                .subscribe(
+                    {
+                        next: (res) => {
+                            let data: CurrencyInterface[] = [];
+
+                            res.forEach((e: iMono) => {
+                                if (e.currencyCodeB === 980) {
+                                    data.push({
+                                        cc: number(`${e.currencyCodeA}`)?.code,
+                                        rate: e.rateBuy && e.rateSell ? (e.rateBuy + e.rateSell) / 2 : e.rateCross,
+                                        rateBuy: e.rateBuy ? e.rateBuy : e.rateCross,
+                                        rateSale: e.rateSell ? e.rateSell : e.rateCross,
+                                    })
+                                }
+                            })
+
+
+                            resolve({
+                                name: 'MonoBank',
+                                data: data
+                            });
+                        }
+                        ,
+                        error: (error) => {
+
+                            resolve({
+                                name: 'MonoBank',
+                                data: null,
+                                msg: error.message
+                            })
+                        }
+                    }
+                )
+        })
+    }
+
+    private getPrivat(): Promise<BankCurrency> {
+        return new Promise((resolve) => {
+                this.fetchBank(this.privatUrl1)
+                    .subscribe((res: any) => {
+                            let data: CurrencyInterface[] = [];
+                            res.forEach((e: iPrivat) => {
+                                    if (e.base_ccy === 'UAH') {
+                                        data.push({
+                                            cc: e.ccy,
+                                            rate: (+e.buy + +e.sale) / 2,
+                                            rateBuy: +e.buy,
+                                            rateSale: +e.sale,
+                                        })
+                                    }
+                                    this.fetchBank(this.privatUrl2)
+                                        .subscribe({
+                                                next: (res: any) => {
+                                                    res.forEach((e: iPrivat) => {
+                                                        if (e.base_ccy === 'UAH') {
+                                                            data.push({
+                                                                cc: e.ccy,
+                                                                rate: (+e.buy + +e.sale) / 2,
+                                                                rateBuy: +e.buy,
+                                                                rateSale: +e.sale,
+                                                            })
+                                                        }
+                                                    })
+                                                    resolve({
+                                                        name: 'Privat24',
+                                                        data: data
+                                                    });
+                                                },
+                                                error: (error) => {
+                                                    resolve({
+                                                            name: 'Privat24',
+                                                            data: null,
+                                                            msg: error.message
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        )
+                                }
+                            )
+                        }
+                    )
+            }
+        )
     }
 }

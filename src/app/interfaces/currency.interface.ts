@@ -5,7 +5,7 @@ export interface CurrencyInterface {
     rateSale?: number,
 }
 
-export interface bankCurrency {
+export interface BankCurrency {
     name: string,
     data: CurrencyInterface[] | null,
     msg?: string,

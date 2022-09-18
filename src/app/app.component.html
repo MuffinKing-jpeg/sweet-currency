@@ -1,4 +1,7 @@
-<h1>{{title}}</h1>
+<h1><a routerLink="/home">{{title}}</a></h1>
 <h2>{{description}} <a [href]="gitLink">{{author}}</a></h2>
-<app-theme-btn></app-theme-btn>
-<app-calculator></app-calculator>
+
+<div class="container">
+    <app-theme-btn></app-theme-btn>
+    <app-calculator-wrapper></app-calculator-wrapper>
+</div>

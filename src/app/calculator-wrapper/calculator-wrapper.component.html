@@ -1,0 +1,6 @@
+<div *ngIf="!fetchCurrency.data" class="loading">
+    <i class="fa-regular fa-compass fa-spin"></i>
+</div>
+
+<app-calculator-nav *ngIf="fetchCurrency.data"></app-calculator-nav>
+<router-outlet *ngIf="fetchCurrency.data"></router-outlet>

@@ -1,0 +1,8 @@
+<nav>
+    <ul>
+        <li *ngFor="let item of this.fetchCurrency.data; index as i;"
+            class="nav-item" id="{{this.fetchCurrency.data[i].name}}">
+            <a [routerLink]="['/calculator', this.fetchCurrency.data[i].name]">{{this.fetchCurrency.data[i].name}}</a>
+        </li>
+    </ul>
+</nav>

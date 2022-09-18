@@ -5,13 +5,21 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {ThemeBtnComponent} from './theme-btn/theme-btn.component';
 import {HttpClientModule} from "@angular/common/http";
-import { CalculatorComponent } from './calculator/calculator.component';
+import {CalculatorWrapperComponent} from './calculator-wrapper/calculator-wrapper.component';
+import {CalculatorNavComponent} from './calculator-wrapper/calculator-nav/calculator-nav.component';
+import {BriefComponent} from './calculator-wrapper/brief/brief.component';
+import {CalculatorComponent} from "./calculator-wrapper/calculator/calculator.component";
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         ThemeBtnComponent,
+        CalculatorWrapperComponent,
+        CalculatorNavComponent,
         CalculatorComponent,
+        BriefComponent,
+        NotFoundComponent,
     ],
     imports: [
         BrowserModule,
